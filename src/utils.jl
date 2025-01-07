@@ -2,6 +2,10 @@
 package utils
 
 =#
+function GeoUPM_dir()
+    joinpath(@__DIR__, "..")
+end
+
 
 function to_grid(E, V)
     # Create tetrahedral elements

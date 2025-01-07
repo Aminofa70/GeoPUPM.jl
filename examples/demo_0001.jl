@@ -3,7 +3,7 @@ using Ferrite
 using Geogram
 using FileIO
 using GLMakie
-fileName_mesh = joinpath(geomgramjl_dir(),"assets","stl","cube.stl")
+fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube.stl")
 M = load(fileName_mesh)
 F = [TriangleFace{Int64}(f) for f in faces(M)]
 V = [Point{3,Float64}(v) for v in coordinates(M)]
