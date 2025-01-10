@@ -1,8 +1,16 @@
 using Revise
+using GeoPUPM
 using Ferrite
 using Geogram
 using FileIO
 using GLMakie
+using GeometryBasics
+using Comodo
+#=
+this demo shows how to remesh a surface using the ggremesh function
+
+=#
+
 fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube.stl")
 M = load(fileName_mesh)
 F = [TriangleFace{Int64}(f) for f in faces(M)]
