@@ -7,7 +7,7 @@ using GLMakie
 using GeometryBasics
 using Comodo
 using PUPM
-# topology optimization for chair
+# topology optimization to generate a chair from a cube stl file (simple example)
 par = DynamicParams()  # Create a dynamic parameter object
 sampleSize = 2.0 # Size of the sample form -1 to 1
 fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube.stl")
