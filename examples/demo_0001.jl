@@ -8,7 +8,7 @@ using GeometryBasics
 using Comodo
 #=
 this demo shows how to remesh a surface using the ggremesh function
-
+demo_0001.jl
 =#
 
 fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube.stl")
