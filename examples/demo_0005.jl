@@ -17,7 +17,7 @@ V = [Point{3,Float64}(v) for v in coordinates(M)]
 n = length(V) # Original number of points
 
 # Remeshing the surface 
-n1 = 5000
+n1 = 15000
 F1, V1 = ggremesh(F, V; nb_pts=n1)
 
 # Generate tetrahedral mesh
@@ -144,9 +144,9 @@ par.vf = 0.5
 # par.Neumann_bc = par.Neumann_bc = Ferrite.getnodeset(grid, "top_circle")  # Nodes on the edge
 par.Neumann_bc = Ferrite.getfacetset(grid, "top")  # Nodes on the edge
 file_name = "linear_elasticity_3d"
-dir = "/Users/aminalibakhshi/Desktop/data_vtu_2"
+dir = "/Users/aminalibakhshi/Desktop/vtu_geo/"
 par.max_itr = 300
 remove_vtk_files(dir) # optional
 #fem example
 # Run topology optimization
-@time"top time" top_upm_3d!(par, file_name, dir)
+@time"top time" top_upm_3d(par, file_name, dir)
