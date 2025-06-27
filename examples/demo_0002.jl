@@ -20,12 +20,13 @@ n = length(V) # Original number of points
 # Remeshing the surface 
 n1 = 5000
 # F1,V1 = ggremesh(F,V; nb_pts=n1)
-F1,V1 = ggremesh(F,V; nb_pts=n1, remesh_anisotropy=0.0, remesh_gradation = 1.0, pre_max_hole_area=100, pre_max_hole_edges=0, post_max_hole_area=100, post_max_hole_edges=0, quiet=0, suppress = true)
-
+F1,V1 = ggremesh(F,V; nb_pts=n1)
 # Generate tetrahedral mesh
-E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
+# E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
+opts = "-q1.2 -a1e-4"
+@time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1; stringOpt = opts)
 ## convert to grid in Ferrite
-grid = to_grid(E_tet, V_tet)
+grid = to_grid(E_tet, V_tet,Ferrite.Tetrahedron)
 min_x = minimum([v[1] for v in V_tet])
 max_x = maximum([v[1] for v in V_tet])
 min_y = minimum([v[2] for v in V_tet])
@@ -80,10 +81,9 @@ ch = create_bc(dh, grid)
 # VTKGridFile("boundary-conditions", dh) do vtk
 #     Ferrite.write_constraints(vtk,ch)
 # end
-dir = "/Users/aminalibakhshi/Desktop/vtu_geo/"
 #mkpath(dir)  # ensure the directory exists
-remove_vtk_files(dir)
-
-VTKGridFile(joinpath(dir, "boundary-conditions"), dh) do vtk
+output_dir = "/Users/aminalibakhshi/Desktop/vtu_geo/"
+remove_vtk_files(output_dir)
+VTKGridFile(joinpath(output_dir, "boundary-conditions"), dh) do vtk
     Ferrite.write_constraints(vtk, ch)
 end

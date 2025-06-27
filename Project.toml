@@ -3,7 +3,17 @@ uuid = "4523a846-9be0-4857-8edc-97dbb97ccbde"
 authors = ["Aminofa70 <amin.alibakhshi@upm.es> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
+Ferrite = "c061ca5d-56c9-439f-9c0e-210fe06d3992"
+GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
 [compat]
+CoordinateTransformations = "0.6.4"
+Ferrite = "1.1.0"
+GeometryBasics = "0.5.9"
+LinearAlgebra = "1.11.0"
 julia = "1.6.7"
 
 [extras]

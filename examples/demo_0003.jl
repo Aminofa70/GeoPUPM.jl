@@ -17,14 +17,15 @@ V = [Point{3,Float64}(v) for v in coordinates(M)]
 n = length(V) # Original number of points
 
 # Remeshing the surface 
-n1 = 1000
+n1 = 2000
 F1, V1 = ggremesh(F, V; nb_pts=n1)
 
 # Generate tetrahedral mesh
-@time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
-
+# @time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
+opts = "-q1.2 -a1e-4"
+@time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1; stringOpt = opts)
 ## Convert to grid in Ferrite
-grid = to_grid(E_tet, V_tet)
+grid = to_grid(E_tet, V_tet, Ferrite.Tetrahedron)
 
 # Calculate domain bounds dynamically
 min_x = minimum([v[1] for v in V_tet])
@@ -82,7 +83,7 @@ function create_values()
     order = 1
     dim = 3
     ip = Lagrange{RefTetrahedron,order}()^dim
-    qr = QuadratureRule{RefTetrahedron}(2)
+    qr = QuadratureRule{RefTetrahedron}(1)
     qr_face = FacetQuadratureRule{RefTetrahedron}(1)
     cell_values = CellValues(qr, ip)
     facet_values = FacetValues(qr_face, ip)
@@ -121,7 +122,7 @@ par.ch = create_bc(par.dh, grid)
 
 par.cell_values, par.facet_values = create_values()
 # par.loads = [LoadCondition_3d("nodal_load", [0.0, 0.0, 1.0])]
-par.loads = [LoadCondition_3d("traction_load", [0.0, 0.0, 1.0])]
+par.loads = [LoadCondition_3d("traction_load", [0.0, 0.0, 0.01])]
 
 # Material properties
 par.E0 = 1.0
@@ -142,9 +143,9 @@ par.vf = 0.5
 # par.Neumann_bc = par.Neumann_bc = Ferrite.getnodeset(grid, "top_circle")  # Nodes on the edge
 par.Neumann_bc = Ferrite.getfacetset(grid, "top_circle")  # Nodes on the edge
 file_name = "linear_elasticity_3d"
-dir = "/Users/aminalibakhshi/Desktop/data_vtu_2"
+dir = "/Users/aminalibakhshi/Desktop/vtu_geo/"
 par.max_itr = 300
 remove_vtk_files(dir) # optional
 #fem example
 # Run topology optimization
-@time"top time" top_upm_3d!(par, file_name, dir)
+@time"top time" top_upm_3d(par, file_name, dir)
