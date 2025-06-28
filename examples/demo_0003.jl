@@ -17,7 +17,7 @@ V = [Point{3,Float64}(v) for v in coordinates(M)]
 n = length(V) # Original number of points
 
 # Remeshing the surface 
-n1 = 2000
+n1 = 200
 F1, V1 = ggremesh(F, V; nb_pts=n1)
 
 # Generate tetrahedral mesh
@@ -122,7 +122,7 @@ par.ch = create_bc(par.dh, grid)
 
 par.cell_values, par.facet_values = create_values()
 # par.loads = [LoadCondition_3d("nodal_load", [0.0, 0.0, 1.0])]
-par.loads = [LoadCondition_3d("traction_load", [0.0, 0.0, 0.01])]
+par.loads = [LoadCondition_3d("traction_load", [0.0, 0.0, 1])]
 
 # Material properties
 par.E0 = 1.0
