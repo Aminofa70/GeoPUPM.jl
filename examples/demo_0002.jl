@@ -12,21 +12,20 @@ this demo test the boundary condistions of the ggremesh function
 
 =#
 
-fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube.stl")
+fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube_hole.stl")
 M = load(fileName_mesh)
 F = [TriangleFace{Int64}(f) for f in faces(M)]
 V = [Point{3,Float64}(v) for v in coordinates(M)]
 n = length(V) # Original number of points
 # Remeshing the surface 
-n1 = 5000
+n1 = 20000
 # F1,V1 = ggremesh(F,V; nb_pts=n1)
 F1,V1 = ggremesh(F,V; nb_pts=n1)
 # Generate tetrahedral mesh
 # E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
-opts = "-q1.2 -a1e-4"
-@time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1; stringOpt = opts)
+@time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
 ## convert to grid in Ferrite
-grid = to_grid(E_tet, V_tet,Ferrite.Tetrahedron)
+grid = to_grid(E_tet, V_tet)
 min_x = minimum([v[1] for v in V_tet])
 max_x = maximum([v[1] for v in V_tet])
 min_y = minimum([v[2] for v in V_tet])
@@ -74,7 +73,7 @@ function create_bc(dh, grid)
     Ferrite.close!(ch)
     return ch
 end
-grid = grid
+
 dh = create_dofhandler(grid)
 ch = create_bc(dh, grid)
 # dir = "/Users/aminalibakhshi/Desktop/vtu_geo/"

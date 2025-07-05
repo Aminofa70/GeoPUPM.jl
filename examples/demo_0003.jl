@@ -10,22 +10,21 @@ using PUPM
 # topology optimization to generate a chair from a cube stl file (simple example)
 par = DynamicParams()  # Create a dynamic parameter object
 sampleSize = 2.0 # Size of the sample form -1 to 1
-fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube.stl")
+fileName_mesh = joinpath(GeoUPM_dir(),"assets","stl","cube_hole.stl")
 M = load(fileName_mesh)
 F = [TriangleFace{Int64}(f) for f in faces(M)]
 V = [Point{3,Float64}(v) for v in coordinates(M)]
 n = length(V) # Original number of points
 
 # Remeshing the surface 
-n1 = 200
+n1 = 5000
 F1, V1 = ggremesh(F, V; nb_pts=n1)
 
 # Generate tetrahedral mesh
-# @time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
-opts = "-q1.2 -a1e-4"
-@time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1; stringOpt = opts)
+@time E_tet, V_tet, CE, Fb, CFb_type = tetgenmesh(F1, V1)
+
 ## Convert to grid in Ferrite
-grid = to_grid(E_tet, V_tet, Ferrite.Tetrahedron)
+grid = to_grid(E_tet, V_tet)
 
 # Calculate domain bounds dynamically
 min_x = minimum([v[1] for v in V_tet])
@@ -70,20 +69,19 @@ function create_boundary(grid, min_x, max_x, min_y, max_y, min_z, max_z)
 
     # Add nodeset for the top surface inside the circle
     # addnodeset!(grid, "top_circle", x -> in_circle(x, r_top, cx_top, cy_top, max_z))
-    addfacetset!(grid, "top_circle", x -> in_circle(x, r_top, cx_top, cy_top, max_z))
+    #addfacetset!(grid, "top_circle", x -> in_circle(x, r_top, cx_top, cy_top, max_z))
 
     # Add nodesets for each bottom corner circle
     for (i, (cx, cy)) in enumerate(corner_centers)
         addnodeset!(grid, "bottom_corner_circle_$i", x -> in_circle(x, r_bottom, cx, cy, min_z))
     end
 end
-
 # Function to create cell and facet values
 function create_values()
     order = 1
     dim = 3
     ip = Lagrange{RefTetrahedron,order}()^dim
-    qr = QuadratureRule{RefTetrahedron}(1)
+    qr = QuadratureRule{RefTetrahedron}(2)
     qr_face = FacetQuadratureRule{RefTetrahedron}(1)
     cell_values = CellValues(qr, ip)
     facet_values = FacetValues(qr_face, ip)
@@ -117,12 +115,14 @@ end
 # Create boundaries dynamically based on the mesh
 create_boundary(grid, min_x, max_x, min_y, max_y, min_z, max_z)
 par.grid = grid
+### define facet sets
+addfacetset!(grid, "top", x -> abs(x[3] - (max_z)) < 1e-4)
 par.dh = create_dofhandler(grid)
 par.ch = create_bc(par.dh, grid)
 
 par.cell_values, par.facet_values = create_values()
 # par.loads = [LoadCondition_3d("nodal_load", [0.0, 0.0, 1.0])]
-par.loads = [LoadCondition_3d("traction_load", [0.0, 0.0, 1])]
+par.loads = [LoadCondition_3d("traction_load", [0.0, 0.0, 1.0])]
 
 # Material properties
 par.E0 = 1.0
@@ -141,7 +141,7 @@ par.vf = 0.5
 
 # Neumann BC
 # par.Neumann_bc = par.Neumann_bc = Ferrite.getnodeset(grid, "top_circle")  # Nodes on the edge
-par.Neumann_bc = Ferrite.getfacetset(grid, "top_circle")  # Nodes on the edge
+par.Neumann_bc = Ferrite.getfacetset(grid, "top")  # Nodes on the edge
 file_name = "linear_elasticity_3d"
 dir = "/Users/aminalibakhshi/Desktop/vtu_geo/"
 par.max_itr = 300

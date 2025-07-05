@@ -8,6 +8,14 @@ To generate mesh for these files we use the packages https://github.com/COMODO-r
 
 For the topology optimization we use https://github.com/Aminofa70/PUPM.jl
 
+To install
+
+```
+julia> ]
+
+(@v1.11) pkg> add https://github.com/Aminofa70/GeoPUPM.jl
+```
+
 ![Flag Image](images/flag.png) 
 
 This project has received funding from the European Union’s Horizon 2020
