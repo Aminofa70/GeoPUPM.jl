@@ -7,7 +7,7 @@ using GLMakie
 using GeometryBasics
 using Comodo
 using PUPM
-using Rotations  # For RotX, RotY, RotZ geometry
+using Rotations  # For RotX, RotY, RotZ femur
 par = DynamicParams()
 # --- Load STL file ---
 fileName_mesh = joinpath(GeoUPM_dir(), "assets", "stl", "femur_iso.stl")
